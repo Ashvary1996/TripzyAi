@@ -26,9 +26,9 @@ function Header() {
       </div>
       {/* Menu Options */}
       <div className="flex gap-5 items-center">
-        {menuOptions.map((menu) => {
+        {menuOptions.map((menu, index) => {
           return (
-            <Link href={menu.path}>
+            <Link href={menu.path} key={index}>
               <h2 className="text-lg hover:scale-105 transition-all hover:text-primary">{menu.name}</h2>
             </Link>
           );
@@ -37,7 +37,7 @@ function Header() {
       {/* Get Started Button */}
       <div>
         <Button>
-            Get Started
+          Get Started
         </Button>
       </div>
     </div>
