@@ -8,10 +8,9 @@ function Provider({
 }>) {
     return (
         <div>
-            <Header/>
+            <Header />
             {children}
-            
-            </div>
+        </div>
     )
 }
 

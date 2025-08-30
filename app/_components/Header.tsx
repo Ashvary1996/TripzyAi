@@ -1,5 +1,6 @@
+'use client'
 import { Button } from "@/components/ui/button";
-import { SignInButton } from "@clerk/nextjs";
+import { SignInButton, useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -18,6 +19,9 @@ function Header() {
       path: "/contact-us",
     },
   ];
+  const { user } = useUser();
+  console.log(user);
+
   return (
     <div className="flex justify-between items-center p-4">
       {/* //Logo// */}
@@ -37,12 +41,22 @@ function Header() {
       </div>
       {/* Get Started Button */}
       <div>
-        <SignInButton mode="modal">
+        {!user ? <SignInButton mode="modal">
           <Button>
             Get Started
           </Button>
 
+
+
         </SignInButton>
+          : <Link href={"/create-trip"}>
+            <Button>
+              Create New Trip
+            </Button>
+          </Link>
+        }
+
+
       </div>
     </div>
   );
