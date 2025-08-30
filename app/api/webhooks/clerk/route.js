@@ -1,7 +1,7 @@
 import { Webhook } from "svix";
 import { headers } from "next/headers";
-import User from "@/models/UserModel";
-import connectToDb from "@/lib/dbConfig";
+import User from "../../../../models/UserModel";
+import connectToDb from "../../../../lib/dbCongif";
 
 export async function POST(req) {
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
