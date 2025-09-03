@@ -35,6 +35,8 @@ function Hero() {
       router.push("/sign-in");
       return;
     }
+    router.push("/create-new-trip");
+    
   };
   return (
     <div className="mt-2 flex justify-center w-full">

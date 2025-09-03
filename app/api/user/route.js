@@ -1,5 +1,5 @@
 import User from "@/models/UserModel";
-import connectToDb from "../../../lib/dbCongif";
+import connectToDb from "../../../lib/dbConfig";
 import { currentUser } from "@clerk/nextjs/server";
 
 export async function POST(request) {
