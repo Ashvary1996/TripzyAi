@@ -20,7 +20,7 @@ function Header() {
     },
   ];
   const { user } = useUser();
-  console.log(user);
+  // console.log(user);
 
   return (
     <div className="flex justify-between items-center p-4">

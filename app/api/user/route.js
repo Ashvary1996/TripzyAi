@@ -2,7 +2,7 @@ import User from "@/models/UserModel";
 import connectToDb from "../../../lib/dbConfig";
 import { currentUser } from "@clerk/nextjs/server";
 
-export async function POST(request) {
+export async function POST() {
   try {
     await connectToDb();
     const clerkUser = await currentUser();

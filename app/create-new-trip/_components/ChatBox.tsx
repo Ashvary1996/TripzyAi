@@ -1,59 +1,263 @@
-'use client'
-import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
-import { Send } from 'lucide-react'
-import React, { useState } from 'react'
+"use client";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import axios from "axios";
+import { Loader, Send } from "lucide-react";
+import React, { useCallback, useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
+import EmptyBoxState from "./EmptyBoxState";
+import GroupSize from "./GroupSize";
+import BudgetUi from "./BudgetUi";
+import SelectDayUi from "./SelectDayUi";
+import FinalTripUi from "./FinalTripUi";
+
 type Message = {
-    role: string,
-    content: string
-}
+  role: string;
+  content: string;
+  ui?: string;
+};
+export type TripInfo = {
+  budget: string;
+  destination: string;
+  duration: string;
+  group_Size: string;
+  origin: string;
+  hotels: any;
+  itinerary: any;
+};
 
 function ChatBox() {
-    const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [userInput, setUserInput] = useState<string>("");
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [isFinal, setIsFinal] = useState<boolean>(false);
+  const [tripDetail, setTripDetails] = useState<TripInfo>();
 
-    const onSend = () => {
-        console.log("clicked");
-        
+  useEffect(() => {
+    let storedId = localStorage.getItem("trip_session_id");
+    if (!storedId) {
+      storedId = uuidv4();
+      localStorage.setItem("trip_session_id", storedId);
+    }
+    setSessionId(storedId);
+  }, []);
 
-    };
-    return (
-        <div className='h-[80vh] flex flex-col'>
-            {/* Display MEssages */}
+  // const onSend = async (inputText?: string) => {
+  //   const textToSend = inputText ?? userInput; // if provided, use it directly
+  //   if (!textToSend?.trim() || !sessionId) {
+  //     return;
+  //   }
 
-            <section className='flex-1  overflow-y-auto p-4'>
-                <div className='flex justify-end mt-2'>
-                    <div className='max-w-lg bg-primary  text-white px-4 py-2 rounded-lg '>
-                        User msg
-                    </div>
-                </div>
-                <div className='flex justify-start mt-2' >
-                    <div className='max-w-lg bg-gray-100  text-black px-4 py-2 rounded-lg '>
-                        Ai Agent msg
-                    </div>
-                </div>
+  //   const newMessage: Message = {
+  //     role: "user",
+  //     content: textToSend,
+  //   };
+  //   setMessages((preMsg) => [...preMsg, newMessage]);
+  //   setLoading(true);
+  //   setUserInput("");
 
-            </section>
-            {/* {userinput} */}
-            <section>
-                {/* Input Box */}
-                <div>
-                    <div className="border rounded-2xl p-4 relative">
-                        <Textarea
-                            placeholder="Create a trip from Paris to New York"
-                            className="w-full h-20 border-none focus-visible:ring-0 shadow-none resize-none"
-                        />
-                        <Button
-                            size={"icon"}
-                            onClick={() => onSend()}
-                            className="bottom-3 right-3 absolute cursor-pointer"
-                        >
-                            <Send className="h-4 w-4" />
-                        </Button>
-                    </div>
-                </div>
-            </section>
+  //   try {
+  //     const result = await axios.post("/api/aimodel", {
+  //       messages: [...messages, newMessage],
+  //       sessionId,
+  //       isFinal,
+  //     });
+  //     const resp = result?.data?.resp;
+  //     if (resp) {
+  //       if (!isFinal
+  //       ) {
+  //         setMessages((preMsg) => [
+  //           ...preMsg,
+  //           {
+  //             role: "assistant",
+  //             content: resp,
+  //             ui: result.data.ui,
+  //           },
+  //         ]);
+  //         console.log("Trip.data", result?.data);
+
+  //       }
+
+  //       if (isFinal) {
+  //         setTripDetails(result?.data?.trip_plan);
+  //       }
+
+  //       setLoading(false);
+  //     }
+  //     console.log("result?.data", result?.data);
+  //   } catch (err) {
+  //     console.error("Error from API:", err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+
+
+  const onSend = useCallback(
+    async (inputText?: string) => {
+      const textToSend = inputText ?? userInput; // if provided, use it directly
+      if (!textToSend?.trim() || !sessionId) return;
+
+      const newMessage: Message = {
+        role: "user",
+        content: textToSend,
+      };
+      setMessages((preMsg) => [...preMsg, newMessage]);
+      setLoading(true);
+      setUserInput("");
+
+      try {
+        const result = await axios.post("/api/aimodel", {
+          messages: [...messages, newMessage],
+          sessionId,
+          isFinal,
+        });
+        const resp = result?.data?.resp;
+        if (resp) {
+          if (!isFinal) {
+            setMessages((preMsg) => [
+              ...preMsg,
+              {
+                role: "assistant",
+                content: resp,
+                ui: result.data.ui,
+              },
+            ]);
+            console.log("Trip.data", result?.data);
+          }
+
+          if (isFinal) {
+            setTripDetails(result?.data?.trip_plan);
+          }
+        }
+      } catch (err) {
+        console.error("Error from API:", err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [userInput, sessionId, messages, isFinal]
+  );
+
+  const RenderGenerativeUi = (ui: string) => {
+    if (ui == "budget") {
+      //budget ui compo
+      return (
+        <BudgetUi
+          onSelectedOption={(val: string) => {
+            // setUserInput(val);
+            onSend(val);
+          }}
+        />
+      );
+    } else if (ui == "groupSize") {
+      //budget ui compo
+      return (
+        <GroupSize
+          onSelectedOption={(val: string) => {
+            // setUserInput(val);
+            onSend(val);
+          }}
+        />
+      );
+    } else if (ui == "tripDuration") {
+      return (
+        <SelectDayUi
+          onSelectedOption={(val: string) => {
+            onSend(val);
+          }}
+        />
+      );
+    } else if (ui == "final") {
+      return (
+        <FinalTripUi
+          viewTrip={() => {
+            console.log("Trip viewed ✅");
+
+          }}
+          disable={!tripDetail}
+        />
+      );
+    }
+    return null;
+  };
+
+  useEffect(() => {
+    const lastMsg = messages[messages.length - 1];
+    if (lastMsg?.ui == "final") {
+      setIsFinal(true);
+      setUserInput("Ok, Great!");
+      //   onSend();
+    }
+  }, [messages]);
+  useEffect(() => {
+    if (isFinal && userInput) {
+      onSend();
+    }
+  }, [isFinal, userInput, onSend]);
+  return (
+    <div className="h-[80vh] flex flex-col">
+      {messages?.length == 0 && (
+        <EmptyBoxState
+          onSelectOption={(text: any) => {
+            setUserInput(text);
+            onSend();
+          }}
+        />
+      )}
+
+      {/* Display MEssages */}
+
+      <section className="flex-1  overflow-y-auto p-4">
+        {messages.map((msg: Message, i) =>
+          msg.role == "user" ? (
+            <div className="flex justify-end mt-2" key={i}>
+              <div className="max-w-lg bg-primary  text-white px-4 py-2 rounded-lg ">
+                {msg.content}
+              </div>
+            </div>
+          ) : (
+            <div className="flex justify-start mt-2" key={i}>
+              <div className="max-w-lg bg-gray-100  text-black px-4 py-2 rounded-lg ">
+                {msg.content}
+                {RenderGenerativeUi(msg.ui ?? "")}
+              </div>
+            </div>
+          )
+        )}
+        {loading && (
+          <div className="flex justify-start mt-2">
+            <div className="max-w-lg bg-gray-100  text-black px-4 py-2 rounded-lg ">
+              {<Loader className="animate-spin" />}
+            </div>
+          </div>
+        )}
+      </section>
+      {/* {userinput} */}
+      <section>
+        {/* Input Box */}
+        <div>
+          <div className="border rounded-2xl p-4 relative">
+            <Textarea
+              placeholder="Create a trip from Paris to New York"
+              className="w-full h-20 border-none focus-visible:ring-0 shadow-none resize-none"
+              onChange={(e) => setUserInput(e.target.value)}
+              value={userInput}
+            />
+            <Button
+              size={"icon"}
+              onClick={() => onSend()}
+              className="bottom-3 right-3 absolute cursor-pointer"
+            >
+              <Send className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
-    )
+      </section>
+    </div>
+  );
 }
 
-export default ChatBox
+export default ChatBox;

@@ -36,14 +36,13 @@ function Hero() {
       return;
     }
     router.push("/create-new-trip");
-    
   };
   return (
     <div className="mt-2 flex justify-center w-full">
       {/* Content */}
       <div className="max-w-3xl w-full text-center space-y-6">
         <h1 className="text-xl md:text-5xl font-bold">
-         {` Hey , I'm Your personal`}
+          {` Hey , I'm Your personal`}
           <span className="text-primary text-4xl p-1">Trip Planner</span>
         </h1>
         <p className="text-lg">
