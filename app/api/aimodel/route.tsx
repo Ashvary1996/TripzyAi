@@ -146,7 +146,7 @@ export async function POST(req: NextRequest) {
       { configurable: { sessionId } }
     );
 
-    console.log("AI Raw Response:", response);
+    // console.log("AI Raw Response:", response);
     //  Normalize Gemini response (string or array of objects)
     let rawContent: string;
     if (typeof response.content === "string") {
@@ -175,6 +175,7 @@ export async function POST(req: NextRequest) {
       parsed = { resp: response.content, ui: "final" }; // fallback
     }
     // console.log("messagehistry Obj:--", messageHistories);
+    console.log("backed_parsed:--", parsed);
 
     return NextResponse.json(parsed);
   } catch (error) {

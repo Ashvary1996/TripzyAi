@@ -43,55 +43,6 @@ function ChatBox() {
     setSessionId(storedId);
   }, []);
 
-  // const onSend = async (inputText?: string) => {
-  //   const textToSend = inputText ?? userInput; // if provided, use it directly
-  //   if (!textToSend?.trim() || !sessionId) {
-  //     return;
-  //   }
-
-  //   const newMessage: Message = {
-  //     role: "user",
-  //     content: textToSend,
-  //   };
-  //   setMessages((preMsg) => [...preMsg, newMessage]);
-  //   setLoading(true);
-  //   setUserInput("");
-
-  //   try {
-  //     const result = await axios.post("/api/aimodel", {
-  //       messages: [...messages, newMessage],
-  //       sessionId,
-  //       isFinal,
-  //     });
-  //     const resp = result?.data?.resp;
-  //     if (resp) {
-  //       if (!isFinal
-  //       ) {
-  //         setMessages((preMsg) => [
-  //           ...preMsg,
-  //           {
-  //             role: "assistant",
-  //             content: resp,
-  //             ui: result.data.ui,
-  //           },
-  //         ]);
-  //         console.log("Trip.data", result?.data);
-
-  //       }
-
-  //       if (isFinal) {
-  //         setTripDetails(result?.data?.trip_plan);
-  //       }
-
-  //       setLoading(false);
-  //     }
-  //     console.log("result?.data", result?.data);
-  //   } catch (err) {
-  //     console.error("Error from API:", err);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
 
 
@@ -115,7 +66,9 @@ function ChatBox() {
           isFinal,
         });
         const resp = result?.data?.resp;
-        if (resp) {
+        // console.log("alll-Resp-----", result?.data);
+
+        if (result?.data?.resp) {
           if (!isFinal) {
             setMessages((preMsg) => [
               ...preMsg,
@@ -128,9 +81,10 @@ function ChatBox() {
             console.log("Trip.data", result?.data);
           }
 
-          if (isFinal) {
-            setTripDetails(result?.data?.trip_plan);
-          }
+        }
+        if (result?.data?.trip_plan) {
+          console.log("i am final trip_plan  response :", result?.data?.trip_plan);
+          setTripDetails(result?.data?.trip_plan);
         }
       } catch (err) {
         console.error("Error from API:", err);
