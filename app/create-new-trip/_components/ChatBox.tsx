@@ -16,14 +16,44 @@ type Message = {
   content: string;
   ui?: string;
 };
+type Coordinates = {
+  latitude: number;
+  longitude: number;
+};
+export type Activity = {
+  place_details: string;
+  place_image_url: string;
+  geo_coordinates: Coordinates;
+  place_address: string;
+  ticket_pricing: string;
+  time_travel_each_location: string;
+  best_time_to_visit: string;
+};
+
+export type Itinerary = {
+  day: string;
+  day_plan: string;
+  best_time_to_visit: string;
+  activities: Activity[];
+};
+export type Hotel = {
+  hotel_name: string;
+  hotel_address: string;
+  hotel_image_url: string;
+  price_per_night: string;
+  geo_coordinates: Coordinates;
+  rating: string;
+  description: string;
+};
+
 export type TripInfo = {
-  budget: string;
   destination: string;
   duration: string;
-  group_Size: string;
   origin: string;
-  hotels: any;
-  itinerary: any;
+  budget: string;
+  group_size: string;
+  hotels: Hotel[];
+  itinerary: Itinerary[];
 };
 
 function ChatBox() {
@@ -42,9 +72,6 @@ function ChatBox() {
     }
     setSessionId(storedId);
   }, []);
-
-
-
 
   const onSend = useCallback(
     async (inputText?: string) => {
@@ -80,10 +107,12 @@ function ChatBox() {
             ]);
             console.log("Trip.data", result?.data);
           }
-
         }
         if (result?.data?.trip_plan) {
-          console.log("i am final trip_plan  response :", result?.data?.trip_plan);
+          console.log(
+            "i am final trip_plan  response :",
+            result?.data?.trip_plan
+          );
           setTripDetails(result?.data?.trip_plan);
         }
       } catch (err) {
@@ -129,7 +158,6 @@ function ChatBox() {
         <FinalTripUi
           viewTrip={() => {
             console.log("Trip viewed ✅");
-
           }}
           disable={!tripDetail}
         />
